@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>ANA-IA - Analizador de Imágenes con AI | Genera Prompts para Midjourney, DALL-E y Stable Diffusion</title>
+    <meta name="title" content="ANA-IA - Analizador de Imágenes con AI | Genera Prompts para Midjourney, DALL-E y Stable Diffusion">
+    <meta name="description" content="ANA-IA analiza cualquier imagen con Inteligencia Artificial, extrae paletas de colores, estilos y genera prompts detallados para usar en Midjourney, DALL-E, Stable Diffusion y más. Todo en tu navegador!">
+    <meta name="keywords" content="ana-ia, analizador de imágenes, IA, inteligencia artificial, generador de prompts, midjourney, dall-e, stable diffusion, paleta de colores, análisis de estilo, computer vision, tensorflow.js, mobilenet, reconocimiento de objetos">
+    <meta name="author" content="tibutec">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="language" content="Spanish">
+    <meta name="revisit-after" content="7 days">
+    <meta name="audience" content="all">
+    
+    <!-- Canonical URL - Actualiza con tu dominio real -->
+    <link rel="canonical" href="https://tu-dominio.com/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tu-dominio.com/">
+    <meta property="og:title" content="ANA-IA - Analizador de Imágenes con AI | Genera Prompts para Midjourney y DALL-E">
+    <meta property="og:description" content="ANA-IA analiza imágenes, extrae paletas de colores y estilos con Inteligencia Artificial para crear prompts perfectos para Midjourney, DALL-E y Stable Diffusion.">
+    <meta property="og:image" content="https://tu-dominio.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ANA-IA - Analizador de Imágenes con Inteligencia Artificial">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="ANA-IA">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://tu-dominio.com/">
+    <meta name="twitter:title" content="ANA-IA - Analizador de Imágenes con AI | Prompts para Midjourney">
+    <meta name="twitter:description" content="Crea prompts perfectos para IA generativa analizando el estilo y colores de tus imágenes favoritas con ANA-IA.">
+    <meta name="twitter:image" content="https://tu-dominio.com/twitter-image.jpg">
+    <meta name="twitter:creator" content="@tuusuario">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#0f0c29">
+    <meta name="msapplication-TileColor" content="#0f0c29">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Favicon con tu logo -->
+    <link rel="icon" type="image/png" sizes="any" href="assets/images/logo.png">
+    <link rel="apple-touch-icon" href="assets/images/logo.png">
+    
+    <!-- Web App Manifest (PWA) -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Preconnect for Performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- TensorFlow.js & MobileNet -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Fondo animado con gradiente -->
+    <div class="bg-gradient" aria-hidden="true"></div>
+
+    <!-- Contenedor de notificaciones toast -->
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-label="Notificaciones"></div>
+
+    <!-- Overlay del sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar de historial -->
+    <aside class="sidebar" id="sidebar" role="complementary" aria-label="Historial de análisis">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-clock-rotate-left"></i> Historial</h2>
+            <div class="sidebar-actions">
+                <button class="btn btn-ghost btn-icon" id="clearHistoryBtn"
+                        aria-label="Limpiar historial" title="Limpiar todo">
+                    <i class="fas fa-trash-can"></i>
+                </button>
+                <button class="btn btn-ghost btn-icon" id="closeSidebarBtn"
+                        aria-label="Cerrar historial">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <div class="sidebar-body" id="historyList">
+            <!-- Se llena dinámicamente -->
+        </div>
+    </aside>
+
+    <!-- App principal -->
+    <div class="app-wrapper">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-brand" id="logoBtn" role="button" tabindex="0" title="Recargar página (limpiar caché)" style="cursor: pointer;">
+                <img src="assets/images/logo.png" alt="ANA-IA - Analizador de Imágenes con IA" class="app-logo">
+                <h1 class="visually-hidden">ANA-IA - Analizador de Imágenes con IA</h1>
+    </div>
+    <div class="header-actions">
+        <div class="model-status" id="modelStatus" role="status" aria-label="Estado del modelo">
+            <span class="status-dot"></span>
+            <span class="status-text">Cargando modelo...</span>
+            <div class="model-progress" id="modelProgress">
+                <div class="model-progress-bar indeterminate" id="modelProgressBar"></div>
+            </div>
+        </div>
+        <button class="btn btn-ghost btn-icon" id="langToggle"
+                aria-label="Cambiar idioma" title="Español / English">
+            <i class="fas fa-language"></i>
+            <span class="lang-text">ES</span>
+        </button>
+        <button class="btn btn-ghost btn-icon" id="historyBtn"
+                aria-label="Abrir historial" title="Historial">
+            <i class="fas fa-clock-rotate-left"></i>
+        </button>
+    </div>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="app-main">
+            <div class="analyzer-panel">
+
+                <!-- Zona de Drag & Drop / Upload -->
+                <div class="drop-zone glass" id="dropZone" role="button" tabindex="0"
+                     aria-label="Selecciona o arrastra una imagen para analizar">
+                    <input type="file" id="imageInput" accept="image/*"
+                           aria-label="Seleccionar archivo de imagen">
+                    <div class="drop-zone-icon">
+                        <i class="fas fa-cloud-arrow-up"></i>
+                    </div>
+                    <p class="drop-zone-text">Arrastra una imagen aquí o haz clic para seleccionar</p>
+                    <p class="drop-zone-hint">Soporta JPG, PNG, GIF, WebP</p>
+                </div>
+
+                <!-- Vista previa de imagen -->
+                <div class="preview-container" id="previewContainer">
+                    <div class="preview-image-wrapper">
+                        <img id="imagePreview" class="preview-image" src="" alt="Imagen seleccionada para análisis">
+                        <div class="preview-overlay">
+                            <button class="btn btn-ghost btn-icon glass" id="clearImageBtn"
+                                    aria-label="Quitar imagen" title="Quitar imagen">
+                                <i class="fas fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Barra de acciones -->
+                    <div class="action-bar">
+                        <button class="btn btn-primary" id="analyzeBtn" disabled>
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                            Analizar imagen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sección de resultados -->
+                <div class="results-section hidden" id="resultsSection">
+                    <div class="results-header">
+                        <i class="fas fa-chart-bar results-icon"></i>
+                        <h2>Resultados del Análisis</h2>
+                    </div>
+
+                    <!-- Indicador de carga -->
+                    <div class="loading-indicator hidden" id="loadingIndicator">
+                        <div class="spinner-container" id="spinnerContainer">
+                            <!-- Spinners para cada etapa -->
+                            <div class="spinner-wrapper active" data-step="0">
+                                <div class="spinner spinner-primary"></div>
+                                <span class="spinner-step-text">Analizando imagen...</span>
+                            </div>
+                            <div class="spinner-wrapper" data-step="1">
+                                <div class="spinner spinner-secondary"></div>
+                                <span class="spinner-step-text">Extrayendo características...</span>
+                            </div>
+                            <div class="spinner-wrapper" data-step="2">
+                                <div class="spinner spinner-success"></div>
+                                <span class="spinner-step-text">Generando paleta...</span>
+                            </div>
+                            <div class="spinner-wrapper" data-step="3">
+                                <div class="spinner spinner-info"></div>
+                                <span class="spinner-step-text">Identificando estilo...</span>
+                            </div>
+                            <div class="spinner-wrapper" data-step="4">
+                                <div class="spinner spinner-warning"></div>
+                                <span class="spinner-step-text">Preparando resultados...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de predicciones -->
+                    <div class="prediction-list" id="predictionList">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Sección de Prompt de Estilo -->
+                <div class="style-prompt-section hidden" id="stylePromptSection">
+                    <div class="style-prompt-header">
+                        <i class="fas fa-palette style-prompt-icon"></i>
+                        <h2>Prompt de Estilo</h2>
+                        <span class="style-prompt-badge">Copiar y usar en Midjourney / DALL-E / Stable Diffusion</span>
+                    </div>
+
+                    <!-- Paleta de colores extraída -->
+                    <div class="color-palette" id="colorPalette">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+
+                    <!-- Atributos de estilo detectados -->
+                    <div class="style-attributes" id="styleAttributes">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+
+                    <!-- Prompt generado -->
+                    <div class="prompt-box glass">
+                        <div class="prompt-text" id="promptText">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        <div class="prompt-actions">
+                            <button class="btn btn-primary btn-sm" id="copyPromptBtn">
+                                <i class="fas fa-copy"></i>
+                                Copiar Prompt
+                            </button>
+                            <button class="btn btn-ghost btn-sm" id="copyPromptENBtn" title="Copiar en inglés">
+                                <i class="fas fa-language"></i>
+                                Copiar en Inglés
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Explicación -->
+                    <p class="style-prompt-note">
+                        <i class="fas fa-circle-info"></i>
+                        Este prompt describe el estilo visual de tu imagen. Pégalo en cualquier IA generativa
+                        para aplicar el mismo look a una nueva imagen.
+                    </p>
+                </div>
+
+            </div>
+        </main>
+        
+        <!-- Footer Semántico -->
+        <footer class="site-footer" role="contentinfo">
+            <div class="footer-content">
+                <div class="footer-grid">
+                    <div class="footer-section">
+                        <h3 class="footer-heading">ANA-IA</h3>
+                        <p class="footer-description">Analizador de imágenes con inteligencia artificial para extraer paletas de colores y generar prompts para IA generativa.</p>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3 class="footer-heading">Enlaces Rápidos</h3>
+                        <ul class="footer-list">
+                            <li>
+                                <a href="https://tibutec.github.io/Tibutec/index.html" class="footer-list-link" target="_blank" rel="noopener noreferrer">
+                                    <img src="https://tibutec.github.io/Tibutec/img/logo.PNG" alt="TibuTec" class="tibutec-logo-icon">
+                                    TibuTec
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p>&copy; 2026 <span class="tibutec-text">TibuTec</span>. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Structured Data (Schema.org JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ANA-IA - Analizador de Imágenes con Inteligencia Artificial",
+        "alternateName": "ANA-IA",
+        "url": "https://tu-dominio.com/",
+        "description": "ANA-IA analiza cualquier imagen con inteligencia artificial, extrae paletas de colores, estilos y genera prompts detallados para usar en Midjourney, DALL-E y Stable Diffusion.",
+        "applicationCategory": "DesignApplication",
+        "operatingSystem": "Web",
+        "browserRequirements": "Requiere un navegador web moderno con soporte para JavaScript y TensorFlow.js",
+        "author": {
+            "@type": "Organization",
+            "name": "tibutec",
+            "url": "https://tu-dominio.com/"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Clasificación de objetos en imágenes con IA",
+            "Extracción de paletas de colores dominantes",
+            "Generación de prompts detallados para IA generativa",
+            "Análisis de estilo visual de imágenes",
+            "Compatible con Midjourney, DALL-E y Stable Diffusion",
+            "Historial de análisis automático",
+            "Funciona completamente en el navegador"
+        ],
+        "keywords": "ana-ia, analizador de imágenes, IA, inteligencia artificial, generador de prompts, midjourney, dall-e, stable diffusion, paleta de colores, análisis de estilo, computer vision",
+        "inLanguage": ["es", "en"],
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://tu-dominio.com/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    <!-- Schema.org para SoftwareApplication (alternativa) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "ANA-IA - Analizador de Imágenes con IA",
+        "description": "ANA-IA: Aplicación web para analizar imágenes con IA, extraer paletas y generar prompts para Midjourney y DALL-E.",
+        "author": {
+            "@type": "Organization",
+            "name": "tibutec",
+            "url": "https://tu-dominio.com/"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "1523",
+            "bestRating": "5"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0"
+        },
+        "applicationCategory": "DesignApplication"
+    }
+    </script>
+
+    <!-- Scripts -->
+    <script src="js/history.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

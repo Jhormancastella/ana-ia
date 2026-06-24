@@ -1,0 +1,10 @@
+# Robots.txt para Analizador de Imágenes con IA
+# Mejora la indexación por parte de motores de búsqueda
+
+User-agent: *
+Allow: /
+Disallow: 
+Sitemap: https://tu-dominio.com/sitemap.xml
+
+# Crawl-delay recomendado (segundos)
+Crawl-delay: 1
