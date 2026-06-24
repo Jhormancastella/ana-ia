@@ -1,8 +1,12 @@
-# ANA-IA - Analizador de Imágenes con Inteligencia Artificial
+<div align="center">
+  <img src="assets/images/logo.png" alt="ANA-IA Logo" width="80">
+  <h1>ANA-IA</h1>
+  <p>Analizador de Imágenes con Inteligencia Artificial</p>
+  
+  [![Ver en vivo](https://img.shields.io/badge/Ver%20en%20vivo-GitHub%20Pages-brightgreen?style=for-the-badge)](https://jhormancastella.github.io/ana-ia/)
+</div>
 
-[![Ver en vivo](https://img.shields.io/badge/Ver%20en%20vivo-GitHub%20Pages-brightgreen?style=for-the-badge)](https://jhormancastella.github.io/ana-ia/)
-
-**ANA-IA** es una aplicación web que analiza imágenes con inteligencia artificial directamente en tu navegador, extrae paletas de colores y genera prompts detallados para Midjourney, DALL-E y Stable Diffusion.
+ANA-IA es una aplicación web que analiza imágenes con inteligencia artificial directamente en tu navegador, extrae paletas de colores y genera prompts detallados para Midjourney, DALL-E y Stable Diffusion.
 
 ## ✨ Características
 
